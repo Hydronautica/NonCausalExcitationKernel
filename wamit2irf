@@ -1,0 +1,25 @@
+import numpy as np
+import scipy.interpolate as spi
+
+def calculate_excitation_kernel(wamit_results, wave_period):
+    # Extract the required data from the WAMIT results
+    wave_periods = wamit_results['wave_periods']
+    wave_forces = wamit_results['wave_forces']
+    
+    # Interpolate the excitation force as a function of wave period
+    excitation_force_interp = spi.interp1d(wave_periods, wave_forces)
+    excitation_force = excitation_force_interp(wave_period)
+    
+    # Calculate the time and excitation kernel
+    time = np.arange(len(excitation_force)) * wave_period / len(excitation_force)
+    excitation_kernel = excitation_force / np.sum(excitation_force)
+    
+    return excitation_kernel, time
+
+# Example WAMIT results
+wamit_results = {
+    'wave_periods': [0.1, 0.2, 0.3],
+    'wave_forces': np.array([1.0, 2.0, 3.0])
+}
+
+excitation_kernel, time = calculate_excitation_kernel(wamit_results, 0.2)
